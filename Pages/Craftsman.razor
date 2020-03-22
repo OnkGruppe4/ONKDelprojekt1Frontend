@@ -1,0 +1,84 @@
+﻿@page "/craftsman"
+
+@using F20ITONK.ASPNETCore.MicroService.ClassLib.Models
+@using ONKDelprojekt1Frontend.Data
+@inject ICraftsManService craftmanService
+@inject NavigationManager NavigationManager
+
+<h1>Craftsmen</h1>
+
+@if (craftsmen == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+   
+    <CreateCraftsman OnCreate="Created"> </CreateCraftsman>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>First name</th>
+                <th>Surname</th>
+                <th>Date of Employment</th>
+                <th>Field of Work</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var craftsman in craftsmen)
+            {
+                <tr>
+                    <td>@craftsman.HVFornavn</td>
+                    <td>@craftsman.HVEfternavn</td>
+                    <td>@craftsman.HVAnsaettelsedato</td>
+                    <td>@craftsman.HVFagomraade</td>
+                    <td>
+                        <button class="btn btn-info" @onclick="(f => NavigateToEdit(craftsman.HaandvaerkerId))">
+                            Edit
+                        </button>
+
+                        <button class="btn btn-danger" @onclick="(f => DeleteCraftsman(craftsman))">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Haandvaerker> craftsmen;
+
+    protected override async Task OnInitializedAsync()
+    {
+        craftsmen = await craftmanService.GetCraftsmen();
+    }
+
+    protected void NavigateToEdit(int id)
+    {
+        NavigationManager.NavigateTo($"/craftsman/edit/{id}");
+    }
+
+    protected void NavigateToCreate()
+    {
+        NavigationManager.NavigateTo("/craftsman/create");
+    }
+
+    protected async void Created()
+    {
+        craftsmen = await craftmanService.GetCraftsmen();
+        StateHasChanged();
+    }
+
+    protected async void DeleteCraftsman(Haandvaerker craftsman)
+    {
+        craftsmen.Remove(craftsman);
+        StateHasChanged();
+
+        await craftmanService.DeleteCraftsman(craftsman.HaandvaerkerId);
+        
+    }
+}

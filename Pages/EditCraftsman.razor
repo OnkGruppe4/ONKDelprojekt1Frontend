@@ -1,0 +1,66 @@
+﻿@page "/craftsman/edit/{id}"
+
+@using F20ITONK.ASPNETCore.MicroService.ClassLib.Models
+@using ONKDelprojekt1Frontend.Data
+@inject ICraftsManService craftmanService
+@inject NavigationManager NavigationManager
+
+@if (craftsman == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+
+
+    <h3>Edit @craftsman.HVFornavn @craftsman.HVEfternavn</h3>
+
+    <EditForm class="form-group" Model="@craftsman">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <section class="row">
+            <label>First name: </label>
+            <InputText class="form-row" @bind-Value="@craftsman.HVFornavn"></InputText>
+        </section>
+        <section class="row">
+            <label>Surname: </label>
+            <InputText class="form-row" @bind-Value="@craftsman.HVEfternavn"></InputText>
+        </section>
+        <section class="row">
+            <label>Date of Employment: </label>
+            <InputDate class="form-row" @bind-Value="@craftsman.HVAnsaettelsedato"></InputDate>
+        </section>
+        <section class="row">
+            <label>Field of work: </label>
+            <InputText class="form-row" @bind-Value="@craftsman.HVFagomraade"></InputText>
+        </section>
+
+        <section class="row">
+            <Button class="btn btn-info" @onclick="(f => Edit(craftsman.HaandvaerkerId))"> Edit </Button>
+            <Button class="btn btn-info" @onclick="(f => Cancel())"> Cancel </Button>
+        </section>        
+    </EditForm>
+}
+    @code {
+[Parameter]
+    public string id { get; set; }
+
+    private Haandvaerker craftsman { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        craftsman = await craftmanService.GetCraftsman(Int32.Parse(id));
+    }
+
+    protected async void Edit(int id)
+    {
+        await craftmanService.PutCraftsman(id, craftsman);
+        NavigationManager.NavigateTo("/craftsman");
+    }
+
+    protected void Cancel()
+    {
+        NavigationManager.NavigateTo("/craftsman");
+    }
+
+    }

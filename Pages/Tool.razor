@@ -1,0 +1,85 @@
+﻿@page "/tool"
+
+@using F20ITONK.ASPNETCore.MicroService.ClassLib.Models
+@using ONKDelprojekt1Frontend.Data
+@inject IToolService toolService
+@inject NavigationManager NavigationManager
+
+<h1>Tools</h1>
+
+@if (tools == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <CreateTool OnCreate="Created"></CreateTool>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Aquired</th>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Serial Number</th>
+                <th>Tool Box</th>
+                <th>Type</th>
+                <th>Options </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tool in tools)
+            {
+                <tr>
+                    <td>@tool.VTAnskaffet</td>
+                    <td>@tool.VTFabrikat</td>
+                    <td>@tool.VTModel</td>
+                    <td>@tool.VTSerienr</td>
+                    <td>@tool.LiggerIvtk</td>
+                    <td>@tool.VTType</td>
+                    <td>
+                        <button class="btn btn-info" @onclick="(f => NavigateToEdit(tool.VTId))">
+                            Edit
+                        </button>
+
+                        <button class="btn btn-danger" @onclick="(f => DeleteTool(tool))">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Vaerktoej> tools;
+
+    protected override async Task OnInitializedAsync()
+    {
+        tools = await toolService.GetTools();
+    }
+
+    protected void NavigateToEdit(long id)
+    {
+        NavigationManager.NavigateTo($"/tool/edit/{id}");
+    }
+
+    protected void NavigateToCreate()
+    {
+        NavigationManager.NavigateTo("/tool/create");
+    }
+
+    protected async void Created()
+    {
+        tools = await toolService.GetTools();
+        StateHasChanged();
+    }
+
+    protected void DeleteTool(Vaerktoej tool)
+    {
+        tools.Remove(tool);
+        StateHasChanged();
+        toolService.DeleteTool(tool.VTId);
+    }
+}

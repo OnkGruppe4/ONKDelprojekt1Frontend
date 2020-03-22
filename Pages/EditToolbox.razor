@@ -1,0 +1,68 @@
+﻿@page "/toolbox/edit/{id}"
+
+@using F20ITONK.ASPNETCore.MicroService.ClassLib.Models
+@using ONKDelprojekt1Frontend.Data
+@inject IToolboxService toolboxService
+@inject NavigationManager NavigationManager
+
+@if (toolBox == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h3>Edit @toolBox.VTKSerienummer</h3>
+
+    <EditForm class="form-group" Model="@toolBox">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <section class="row">
+            <label>Acquired: </label>
+            <InputDate class="form-row" @bind-Value="@toolBox.VTKAnskaffet"></InputDate>
+        </section>
+        <section class="row">
+            <label>Brand: </label>
+            <InputText class="form-row" @bind-Value="@toolBox.VTKFabrikat"></InputText>
+        </section>
+        <section class="row">
+            <label>Color: </label>
+            <InputText class="form-row" @bind-Value="@toolBox.VTKFarve"></InputText>
+        </section>
+        <section class="row">
+            <label>Model: </label>
+            <InputText class="form-row" @bind-Value="@toolBox.VTKModel"></InputText>
+        </section>
+        <section class="row">
+            <label>Serial Number: </label>
+            <InputText class="form-row" @bind-Value="@toolBox.VTKSerienummer"></InputText>
+        </section>
+
+        <section class="row">
+            <Button class="btn btn-info" @onclick="(f => Edit(toolBox.VTKId))"> Edit </Button>
+            <Button class="btn btn-info" @onclick="(f => Cancel())"> Cancel </Button>
+        </section>
+    </EditForm>
+}
+    @code {
+[Parameter]
+    public string id { get; set; }
+
+    private Vaerktoejskasse toolBox { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        toolBox = await toolboxService.GetToolbox(Int32.Parse(id));
+    }
+
+    protected async void Edit(int id)
+    {
+        await toolboxService.PutToolbox(id, toolBox);
+        NavigationManager.NavigateTo("/toolbox");
+    }
+
+    protected void Cancel()
+    {
+        NavigationManager.NavigateTo("/toolbox");
+    }
+
+    }

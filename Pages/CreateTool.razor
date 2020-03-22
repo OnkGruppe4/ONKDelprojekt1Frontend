@@ -1,0 +1,65 @@
+﻿@page "/tool/create"
+
+@using F20ITONK.ASPNETCore.MicroService.ClassLib.Models
+@using ONKDelprojekt1Frontend.Data
+@inject IToolService toolService
+@inject NavigationManager NavigationManager
+
+<h3>Create a new Tool</h3>
+
+<EditForm class="form-group" Model="@tool">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <section class="row">
+        <label>Acquired: </label>
+        <InputDate class="form-row" @bind-Value="@tool.VTAnskaffet"></InputDate>
+    </section>
+    <section class="row">
+        <label>Brand: </label>
+        <InputText class="form-row" @bind-Value="@tool.VTFabrikat"></InputText>
+    </section>
+    <section class="row">
+        <label>Type: </label>
+        <InputText class="form-row" @bind-Value="@tool.VTType"></InputText>
+    </section>
+    <section class="row">
+        <label>Model: </label>
+        <InputText class="form-row" @bind-Value="@tool.VTModel"></InputText>
+    </section>
+    <section class="row">
+        <label>Serial Number: </label>
+        <InputText class="form-row" @bind-Value="@tool.VTSerienr"></InputText>
+    </section>
+    <section class="row">
+        <label>Toolbox number: </label>
+        <InputNumber class="form-row" @bind-Value="@tool.LiggerIvtk"></InputNumber>
+    </section>
+
+    <section class="row">
+        <Button class="btn btn-info" @onclick="(f => Create())"> Create </Button>
+        <Button class="btn btn-info" @onclick="(f => Cancel())"> Cancel </Button>
+    </section>
+</EditForm>
+
+@code {
+    [Parameter] public EventCallback<string> OnCreate { get; set; }
+
+    private Vaerktoej tool { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        tool = new Vaerktoej();
+    }
+
+    protected async void Create()
+    {
+        await toolService.PostTool(tool);
+        OnCreate.InvokeAsync("");
+        OnInitializedAsync();
+    }
+
+    protected void Cancel()
+    {
+        OnInitializedAsync();
+    }
+}

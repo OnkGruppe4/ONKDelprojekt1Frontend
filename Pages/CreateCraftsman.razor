@@ -1,0 +1,62 @@
+﻿@page "/craftsman/create"
+
+@using F20ITONK.ASPNETCore.MicroService.ClassLib.Models
+@using ONKDelprojekt1Frontend.Data
+@inject ICraftsManService craftmanService
+@inject NavigationManager NavigationManager
+
+<h3>Create a new craftsman</h3>
+
+<EditForm class="form-group" Model="@craftsman">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <section class="row">
+        <label>First name: </label>
+        <InputText class="form-row" @bind-Value="@craftsman.HVFornavn"></InputText>
+    </section>
+    <section class="row">
+        <label>Surname: </label>
+        <InputText class="form-row" @bind-Value="@craftsman.HVEfternavn"></InputText>
+    </section>
+    <section class="row">
+        <label>Date of Employment: </label>
+        <InputDate class="form-row" @bind-Value="@craftsman.HVAnsaettelsedato"></InputDate>
+    </section>
+    <section class="row">
+        <label>Field of work: </label>
+        <InputText class="form-row" @bind-Value="@craftsman.HVFagomraade"></InputText>
+    </section>
+
+    <section class="row">
+        <Button class="btn btn-info" @onclick="(f => Create())"> Create </Button>
+        <Button class="btn btn-info" @onclick="(f => Cancel())"> Cancel </Button>
+    </section>
+
+
+
+
+
+</EditForm>
+@code {
+    [Parameter] public EventCallback<string> OnCreate { get; set; }
+
+    private Haandvaerker craftsman { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        craftsman = new Haandvaerker() { HVAnsaettelsedato = DateTime.Now};
+    }
+
+    protected async void Create()
+    {
+        await craftmanService.PostCraftsman(craftsman);
+        OnCreate.InvokeAsync("");
+        OnInitializedAsync();
+    }
+
+    protected void Cancel()
+    {
+        OnInitializedAsync();
+    }
+}

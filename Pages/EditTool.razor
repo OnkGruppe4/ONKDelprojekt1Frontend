@@ -1,0 +1,71 @@
+﻿@page "/tool/edit/{id}"
+
+@using F20ITONK.ASPNETCore.MicroService.ClassLib.Models
+@using ONKDelprojekt1Frontend.Data
+@inject IToolService toolService
+@inject NavigationManager NavigationManager
+
+@if (tool == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+
+    <h3>Edit @tool.VTSerienr</h3>
+
+
+    <EditForm class="form-group" Model="@tool">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <section class="row">
+            <label>Acquired: </label>
+            <InputDate class="form-row" @bind-Value="@tool.VTAnskaffet"></InputDate>
+        </section>
+        <section class="row">
+            <label>Brand: </label>
+            <InputText class="form-row" @bind-Value="@tool.VTFabrikat"></InputText>
+        </section>
+        <section class="row">
+            <label>Type: </label>
+            <InputText class="form-row" @bind-Value="@tool.VTType"></InputText>
+        </section>
+        <section class="row">
+            <label>Model: </label>
+            <InputText class="form-row" @bind-Value="@tool.VTModel"></InputText>
+        </section>
+        <section class="row">
+            <label>Serial Number: </label>
+            <InputText class="form-row" @bind-Value="@tool.VTSerienr"></InputText>
+        </section>
+
+        <section class="row">
+            <Button class="btn btn-info" @onclick="(f => Edit(tool.VTId))"> Edit </Button>
+            <Button class="btn btn-info" @onclick="(f => Cancel())"> Cancel </Button>
+        </section>
+    </EditForm>
+}
+
+    @code {
+[Parameter]
+    public string id { get; set; }
+
+    private Vaerktoej tool { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        tool = await toolService.GetTool(Int32.Parse(id));
+    }
+
+    protected async void Edit(long id)
+    {
+        await toolService.PutTool(id, tool);
+        NavigationManager.NavigateTo("/tool");
+    }
+
+    protected void Cancel()
+    {
+        NavigationManager.NavigateTo("/tool");
+    }
+
+    }

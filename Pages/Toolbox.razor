@@ -1,0 +1,85 @@
+﻿@page "/toolbox"
+
+@using F20ITONK.ASPNETCore.MicroService.ClassLib.Models
+@using ONKDelprojekt1Frontend.Data
+@inject IToolboxService toolboxService
+@inject NavigationManager NavigationManager
+
+<h1>ToolBoxes</h1>
+
+@if (toolBoxes == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <CreateToolbox OnCreate="Created"></CreateToolbox>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Acquired</th>
+                <th>Brand</th>
+                <th>Color</th>
+                <th>Model</th>
+                <th>Owner</th>
+                <th>Serial Number</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var toolBox in toolBoxes)
+            {
+                <tr>
+                    <td>@toolBox.VTKAnskaffet</td>
+                    <td>@toolBox.VTKFabrikat</td>
+                    <td>@toolBox.VTKFarve</td>
+                    <td>@toolBox.VTKModel</td>
+                    <td>@toolBox.VTKEjesAf</td>
+                    <td>@toolBox.VTKSerienummer</td>
+                    <td>
+                        <button class="btn btn-info" @onclick="(f => NavigateToEdit(toolBox.VTKId))">
+                            Edit
+                        </button>
+
+                        <button class="btn btn-danger" @onclick="(f => DeleteToolBox(toolBox))">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Vaerktoejskasse> toolBoxes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        toolBoxes = await toolboxService.GetToolboxes();
+    }
+
+    protected void NavigateToEdit(int id)
+    {
+        NavigationManager.NavigateTo($"/toolbox/edit/{id}");
+    }
+
+    protected void NavigateToCreate()
+    {
+        NavigationManager.NavigateTo("/toolbox/create");
+    }
+
+    protected async void Created()
+    {
+        toolBoxes = await toolboxService.GetToolboxes();
+        StateHasChanged();
+    }
+
+    protected void DeleteToolBox(Vaerktoejskasse toolBox)
+    {
+        toolBoxes.Remove(toolBox);
+        StateHasChanged();
+
+        toolboxService.DeleteToolbox(toolBox.VTKId);
+    }
+}
